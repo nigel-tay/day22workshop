@@ -17,16 +17,16 @@ public class RsvpRepository {
     @Autowired
     JdbcTemplate jTemplate;
 
-    public List<Rsvp> getRsvpRecord() {
+    public List<Rsvp> getAllRsvps() {
         return new ArrayList<Rsvp>(jTemplate.query("SELECT * FROM rsvp;", BeanPropertyRowMapper.newInstance(Rsvp.class)));
     }
 
     public Rsvp searchRsvpRecord(String fullName) {
-        return jTemplate.queryForObject("SELECT * FROM rsvp WHERE full_name = ?;", BeanPropertyRowMapper.newInstance(Rsvp.class), fullName);
+        return jTemplate.queryForObject("SELECT * FROM rsvp WHERE full_name LIKE ?;", BeanPropertyRowMapper.newInstance(Rsvp.class), new Object[]{"%" + fullName + "%"});
     }
 
     public Integer addRsvpRecord(Rsvp rsvp) {
-        int addValue = jTemplate.update("INSERT INTO rsvp values('1', 'Joe', 'joe@email.com', '12345678', '2023-07-22', 'Here are some comments');", 
+        int addValue = jTemplate.update("INSERT INTO rsvp values(?, ?, ?, ?, ?, ?);", 
                         rsvp.getId(),
                         rsvp.getFullName(),
                         rsvp.getEmail(),
@@ -46,4 +46,9 @@ public class RsvpRepository {
                                         rsvp.getId());
         return updateValue;
     }
+
+    public Integer getRsvpCount() {
+        return getAllRsvps().size();
+    }
 }
+// Continue with count method and then service and rest template if needed
